@@ -67,6 +67,10 @@
     @apply px-6 py-10 max-w-7xl mx-auto;
   }
 
+  .section-card {
+    @apply bg-white border-[4px] border-black rounded-[22px] shadow-200 hover:bg-primary-100 transition-all duration-500;
+  }
+
   .card_grid {
     @apply grid md:grid-cols-3 sm:grid-cols-2 gap-5;
   }
@@ -149,7 +153,7 @@
   }
 
   .startup-card_btn {
-    @apply rounded-full bg-black-200 font-medium text-[16px] text-white px-5 py-3 !important;
+    @apply btn-primary;
   }
 
   .startup-card_skeleton {
@@ -182,7 +186,7 @@
   }
 
   .startup-form_btn {
-    @apply bg-primary border-[4px] border-black rounded-full p-5 min-h-[70px] w-full font-bold text-[18px] !important;
+    @apply btn-primary;
   }
 
   /* view */
@@ -196,6 +200,16 @@
 
   .category-tag {
     @apply font-medium text-[16px] bg-primary-100 px-4 py-2 rounded-full;
+  }
+
+  /* buttons */
+  .btn-primary {
+    @apply bg-primary border-[4px] border-black rounded-full px-6 py-4 font-work-sans font-bold text-[18px] text-black shadow-200 hover:bg-primary-100 hover:shadow-none transition-all duration-500;
+  }
+
+  /* chart container */
+  .chart-container {
+    @apply bg-white border-[4px] border-black rounded-[22px] shadow-200 p-4 max-w-[400px] mx-auto pattern;
   }
 
   .pattern {

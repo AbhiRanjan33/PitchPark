@@ -1,64 +1,94 @@
+"use client";
+
+import React from "react";
+import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
+import Ping from "./Ping";
 import Image from "next/image";
-import { auth, signOut, signIn } from "@/auth";
-import { BadgePlus, LogOut } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { BadgePlus, LogOut, User } from "lucide-react";
+import { getRoleFromStorage } from "../app/role";
 
-const Navbar = async () => {
-  const session = await auth();
+const Navbar = () => {
+  const { data: session, status } = useSession();
 
-  return (
-    <header className="px-5 py-3 bg-white shadow-sm font-work-sans">
-      <nav className="flex justify-between items-center">
-        <Link href="/">
-          <Image src="/logo.png" alt="logo" width={144} height={30} />
-        </Link>
+  console.log("Navbar Session:", session, "Status:", status);
 
-        <div className="flex items-center gap-5 text-black">
-          {session && session?.user ? (
-            <>
-              <Link href="/startup/create">
-                <span className="max-sm:hidden">Create</span>
-                <BadgePlus className="size-6 sm:hidden" />
-              </Link>
-
-              <form
-                action={async () => {
-                  "use server";
-
-                  await signOut({ redirectTo: "/" });
-                }}
-              >
-                <button type="submit">
-                  <span className="max-sm:hidden">Logout</span>
-                  <LogOut className="size-6 sm:hidden text-red-500" />
-                </button>
-              </form>
-
-              <Link href={`/user/${session?.id}`}>
-                <Avatar className="size-10">
-                  <AvatarImage
-                    src={session?.user?.image || ""}
-                    alt={session?.user?.name || ""}
-                  />
-                  <AvatarFallback>AV</AvatarFallback>
-                </Avatar>
-              </Link>
-            </>
-          ) : (
-            <form
-              action={async () => {
-                "use server";
-
-                await signIn("github");
-              }}
-            >
-              <button type="submit">Login</button>
-            </form>
-          )}
+  if (status === "loading") {
+    return (
+      <nav className="flex items-center justify-between p-4 bg-gray-800 text-white">
+        <div className="flex items-center">
+          <span className="mr-2 text-lg font-semibold">Pitch Park</span>
+          <Ping />
+        </div>
+        <div>
+          <p>Loading...</p>
         </div>
       </nav>
-    </header>
+    );
+  }
+
+  // Get role from storage
+  const role = getRoleFromStorage();
+  const isInvestor = role === "investor";
+
+  console.log("Navbar - Selected Role from Storage:", role);
+
+  return (
+    <nav className="flex items-center justify-between p-4 bg-gray-800 text-white">
+      <div className="flex items-center">
+        <Link href="/">
+          <span className="mr-2 text-lg font-semibold">Pitch Park</span>
+        </Link>
+        <Ping />
+      </div>
+      <div className="flex items-center gap-5">
+        {session ? (
+          <>
+            {isInvestor ? (
+              <Link
+                href="/investor-details"
+                className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow transition-all"
+              >
+                <User className="size-5" />
+                <span className="hidden sm:inline">Create Details</span>
+              </Link>
+            ) : (
+              <Link
+                href="/startup/create"
+                className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow transition-all"
+              >
+                <BadgePlus className="size-5" />
+                <span className="hidden sm:inline">Create</span>
+              </Link>
+            )}
+            {session.user?.image && (
+              <Link href={`/user/${session.id}`}>
+                <Image
+                  src={session.user.image}
+                  alt="Profile"
+                  width={40}
+                  height={40}
+                  className="rounded-full border-2 border-white"
+                />
+              </Link>
+            )}
+            <button
+              onClick={() => signOut({ callbackUrl: "/" })}
+              className="px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg shadow text-white transition-all"
+            >
+              <LogOut className="inline size-5 mr-2" />
+              Logout
+            </button>
+          </>
+        ) : (
+          <Link href="/signin-role">
+            <button className="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg shadow text-white transition-all">
+              Login
+            </button>
+          </Link>
+        )}
+      </div>
+    </nav>
   );
 };
 

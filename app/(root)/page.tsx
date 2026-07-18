@@ -1,26 +1,31 @@
+// page.tsx
 import SearchForm from "@/components/SearchForm";
 import StartupCard, { StartupTypeCard } from "@/components/StartupCard";
 import { STARTUPS_QUERY } from "@/sanity/lib/queries";
 import { sanityFetch, SanityLive } from "@/sanity/lib/live";
 import { auth } from "@/auth";
+import ProfileDisplay from "@/components/ProfileDisplay"; // Adjust path as needed
 
 export default async function Home({
   searchParams,
 }: {
-  searchParams: Promise<{ query?: string }>;
+  searchParams: Promise<{ query?: string }>; // Remove role from searchParams
 }) {
-  const query = (await searchParams).query;
+  const { query } = await searchParams;
   const params = { search: query || null };
 
   const session = await auth();
 
-  console.log(session?.id);
+  console.log("Session ID:", session?.id);
 
   const { data: posts } = await sanityFetch({ query: STARTUPS_QUERY, params });
 
   return (
     <>
       <section className="pink_container">
+        {/* Use Client Component to display profile and role */}
+        <ProfileDisplay session={session} />
+
         <h1 className="heading">
           Pitch Your Startup, <br />
           Connect With Entrepreneurs

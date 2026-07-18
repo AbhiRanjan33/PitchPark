@@ -6,7 +6,17 @@ import { Button } from "@/components/ui/button";
 import { Author, Startup } from "@/sanity/types";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export type StartupTypeCard = Omit<Startup, "author"> & { author?: Author };
+export type StartupTypeCard = Omit<Startup, "author"> & {
+  author?: Author;
+  revenue?: number;
+  funding?: number;
+  teamSize?: number;
+  foundingYear?: number;
+  location?: string;
+  stage?: string;
+  website?: string;
+  growthData?: { year: number; revenue: number }[];
+};
 
 const StartupCard = ({ post }: { post: StartupTypeCard }) => {
   const {
@@ -18,7 +28,16 @@ const StartupCard = ({ post }: { post: StartupTypeCard }) => {
     _id,
     image,
     description,
+    foundingYear,
+    location,
+    stage,
+    growthData,
   } = post;
+
+
+  const latestGrowth = growthData && growthData.length > 0
+    ? growthData.reduce((latest, current) => (current.year > latest.year ? current : latest))
+    : null;
 
   return (
     <li className="startup-card group">
@@ -29,7 +48,6 @@ const StartupCard = ({ post }: { post: StartupTypeCard }) => {
           <span className="text-16-medium">{views}</span>
         </div>
       </div>
-
       <div className="flex-between mt-5 gap-5">
         <div className="flex-1">
           <Link href={`/user/${author?._id}`}>
@@ -49,13 +67,20 @@ const StartupCard = ({ post }: { post: StartupTypeCard }) => {
           />
         </Link>
       </div>
-
       <Link href={`/startup/${_id}`}>
         <p className="startup-card_desc">{description}</p>
-
         <img src={image} alt="placeholder" className="startup-card_img" />
       </Link>
-
+      <div className="mt-3 text-14-medium text-gray-600">
+        {stage && <p>Stage: <span className="font-semibold">{stage}</span></p>}
+        {location && <p>Location: <span className="font-semibold">{location}</span></p>}
+        {foundingYear && <p>Founded: <span className="font-semibold">{foundingYear}</span></p>}
+        {latestGrowth && (
+          <p>
+            Revenue ({latestGrowth.year}): <span className="font-semibold">₹{latestGrowth.revenue.toLocaleString()}</span>
+          </p>
+        )}
+      </div>
       <div className="flex-between gap-3 mt-5">
         <Link href={`/?query=${category?.toLowerCase()}`}>
           <p className="text-16-medium">{category}</p>

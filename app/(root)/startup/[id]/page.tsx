@@ -1,4 +1,8 @@
-import { Suspense } from "react";
+import GrowthChart from "@/components/GrowthChart";
+import FundingSourcesChart from "@/components/FundingSourcesChart";
+import RevenueVsExpensesChart from "@/components/RevenueVsExpensesChart";
+import RevenueByProductChart from "@/components/RevenueByProductChart";
+import StartupScoreClient from "@/components/StartupScoreClient";
 import { client } from "@/sanity/lib/client";
 import {
   PLAYLIST_BY_SLUG_QUERY,
@@ -8,11 +12,13 @@ import { notFound } from "next/navigation";
 import { formatDate } from "@/lib/utils";
 import Link from "next/link";
 import Image from "next/image";
-
 import markdownit from "markdown-it";
 import { Skeleton } from "@/components/ui/skeleton";
 import View from "@/components/View";
 import StartupCard, { StartupTypeCard } from "@/components/StartupCard";
+import { Button } from "@/components/ui/button";
+import { Suspense } from "react";
+import AIFeedbackClient from "@/components/AiFeedbackClient";
 
 const md = markdownit();
 
@@ -21,26 +27,37 @@ export const experimental_ppr = true;
 const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
 
-  // Fetch the post and playlist data concurrently
   const [post, playlistData] = await Promise.all([
     client.fetch(STARTUP_BY_ID_QUERY, { id }),
     client.fetch(PLAYLIST_BY_SLUG_QUERY, { slug: "editor-picks-new" }),
   ]);
-  
-  // If no post is found, return the "notFound" response
+
   if (!post) return notFound();
-  
-  // Extract editor posts, fall back to an empty array if not present
+
   const editorPosts = playlistData?.select || [];
-  
-  // Parse the post pitch content with markdown
   const parsedContent = md.render(post?.pitch || "");
+
+  const chartTheme = {
+    backgroundColor: [
+      'rgba(251, 232, 67, 0.8)', // primary yellow
+      'rgba(0, 0, 0, 0.8)', // black
+      'rgba(255, 255, 255, 0.8)', // white
+      'rgba(251, 232, 67, 0.5)',
+      'rgba(0, 0, 0, 0.5)',
+    ],
+    borderColor: '#000000',
+    borderWidth: 2,
+    font: {
+      family: 'Work Sans, sans-serif',
+      size: 12,
+      weight: '600',
+    },
+  };
 
   return (
     <>
       <section className="pink_container !min-h-[230px]">
         <p className="tag">{formatDate(post?._createdAt)}</p>
-
         <h1 className="heading">{post.title}</h1>
         <p className="sub-heading !max-w-5xl">{post.description}</p>
       </section>
@@ -59,21 +76,19 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
               className="flex gap-2 items-center mb-3"
             >
               <Image
-                src={post.author?.image||'/195146744.webp'}
+                src={post.author?.image || "/195146744.webp"}
                 alt="avatar"
                 width={64}
                 height={64}
                 className="rounded-full drop-shadow-lg"
               />
-
               <div>
-                <p className="text-20-medium">{post.author?.name||'Abhi'}</p>
+                <p className="text-20-medium">{post.author?.name || "Abhi"}</p>
                 <p className="text-16-medium !text-black-300">
-                  @{post.author?.username||'AbhiRanjan33'}
+                  @{post.author?.username || "AbhiRanjan33"}
                 </p>
               </div>
             </Link>
-
             <p className="category-tag">{post.category}</p>
           </div>
 
@@ -86,25 +101,127 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
           ) : (
             <p className="no-result">No details provided</p>
           )}
-        </div>
 
-        <hr className="divider" />
-
-        {editorPosts.length > 0 && (
-          <div className="max-w-4xl mx-auto">
-            <p className="text-30-semibold">Editor Picks</p>
-
-            <ul className="mt-7 card_grid-sm">
-              {editorPosts.map((post: StartupTypeCard, i: number) => (
-                <StartupCard key={i} post={post} />
-              ))}
-            </ul>
+          {/* Startup Details */}
+          <div className="mt-10">
+            <h3 className="text-30-bold">Startup Details</h3>
+            <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-6 text-16-medium">
+              {post.stage && (
+                <p>
+                  <span className="font-semibold">Stage:</span> {post.stage}
+                </p>
+              )}
+              {post.location && (
+                <p>
+                  <span className="font-semibold">Location:</span> {post.location}
+                </p>
+              )}
+              {post.foundingYear && (
+                <p>
+                  <span className="font-semibold">Founded:</span> {post.foundingYear}
+                </p>
+              )}
+              {post.teamSize && (
+                <p>
+                  <span className="font-semibold">Team Size:</span> {post.teamSize}
+                </p>
+              )}
+              {post.revenue && (
+                <p>
+                  <span className="font-semibold">Total Revenue:</span> ₹{post.revenue.toLocaleString()}
+                </p>
+              )}
+              {post.funding && (
+                <p>
+                  <span className="font-semibold">Funding:</span> ₹{post.funding.toLocaleString()}
+                </p>
+              )}
+              {post.valuation && (
+                <p>
+                  <span className="font-semibold">Valuation:</span> ₹{post.valuation.toLocaleString()}
+                </p>
+              )}
+              {post.website && (
+                <p>
+                  <span className="font-semibold">Website:</span>{" "}
+                  <Link href={post.website} target="_blank" className="text-blue-500 hover:underline">
+                    {post.website}
+                  </Link>
+                </p>
+              )}
+            </div>
           </div>
-        )}
 
-        <Suspense fallback={<Skeleton className="view_skeleton" />}>
-          <View id={id} />
-        </Suspense>
+          {/* View Count with added margin to avoid overlap */}
+          <div className="mb-10">
+            <Suspense fallback={<Skeleton className="view_skeleton" />}>
+              <View id={id} />
+            </Suspense>
+          </div>
+
+          {/* Charts Section */}
+          <div className="mt-10">
+            <h3 className="text-30-bold">Financial Overview</h3>
+            <div className="mt-5 space-y-10">
+              {post.growthData && post.growthData.length > 0 && (
+                <div>
+                  <h4 className="text-20-semibold">Revenue vs Expenses</h4>
+                  <div className="chart-container">
+                    <RevenueVsExpensesChart growthData={post.growthData} theme={chartTheme} />
+                  </div>
+                </div>
+              )}
+
+              {post.fundingSources && post.fundingSources.length > 0 && (
+                <div>
+                  <h4 className="text-20-semibold">Funding Sources</h4>
+                  <div className="chart-container">
+                    <FundingSourcesChart fundingSources={post.fundingSources} theme={chartTheme} />
+                  </div>
+                </div>
+              )}
+
+              {post.revenueByProduct && post.revenueByProduct.length > 0 && (
+                <div>
+                  <h4 className="text-20-semibold">Revenue by Product</h4>
+                  <div className="chart-container">
+                    <RevenueByProductChart revenueByProduct={post.revenueByProduct} theme={chartTheme} />
+                  </div>
+                </div>
+              )}
+
+              {post.growthData && post.growthData.length > 0 && (
+                <div>
+                  <h4 className="text-20-semibold">Revenue Growth</h4>
+                  <div className="chart-container">
+                    <GrowthChart growthData={post.growthData} theme={chartTheme} />
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Get AI Feedback Button */}
+          <div className="mt-10 flex justify-center">
+            <AIFeedbackClient id={id} />
+          </div>
+
+          {/* Get Startup Score Section */}
+          <StartupScoreClient post={post} />
+
+          <hr className="divider" />
+
+          {editorPosts.length > 0 && (
+            <div className="max-w-4xl mx-auto">
+              <p className="text-30-semibold">Editor Picks</p>
+              <ul className="mt-7 card_grid-sm">
+                {editorPosts.map((post: StartupTypeCard, i: number) => (
+                  <StartupCard key={i} post={post} />
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
       </section>
     </>
   );
