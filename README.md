@@ -22,7 +22,7 @@
 
 ## <a name="introduction">🤖 Introduction</a>
 
-**Pitch Park** is a professional discovery platform where entrepreneurs can submit their startup ideas for virtual pitch competitions, browse other pitches, and gain exposure through a sleek, minimalistic design (featuring a signature white and pink aesthetic) for a smooth user experience. It acts as a direct bridge, connecting startup founders with potential investors and enthusiasts.
+**Pitch Park** is a premium discovery platform where entrepreneurs can submit their startup ideas for virtual pitch competitions, browse other pitches, and gain exposure through a sleek, minimalistic design (featuring a professional SaaS aesthetic with zinc and indigo styling) for a smooth user experience. It acts as a direct bridge, connecting startup founders with potential investors and enthusiasts.
 
 Additionally, Pitch Park features an intelligent **Startup Score Predictor** powered by a Machine Learning backend that evaluates a startup's metrics (like Annual Revenue, Funding Raised, Team Size, Location, etc.) to generate a predicted success score, helping investors discover high-potential companies.
 

@@ -15,33 +15,37 @@ const config: Config = {
 			},
 			colors: {
 				primary: {
-					"100": "#FFE8F0",
-					DEFAULT: "#EE2B69",
+					50: '#eef2ff',
+					100: '#e0e7ff',
+					200: '#c7d2fe',
+					300: '#a5b4fc',
+					400: '#818cf8',
+					500: '#6366f1',
+					600: '#4f46e5', // Indigo 600 as main accent
+					700: '#4338ca',
+					800: '#3730a3',
+					900: '#312e81',
+					DEFAULT: "#4f46e5", // Indigo 600
 				},
-				secondary: "#FBE843",
+				secondary: "#f3f4f6", // zinc-100
 				black: {
-					"100": "#333333",
-					"200": "#141413",
-					"300": "#7D8087",
-					DEFAULT: "#000000",
+					100: "#3f3f46", // zinc-700
+					200: "#27272a", // zinc-800
+					300: "#18181b", // zinc-900
+					DEFAULT: "#09090b", // zinc-950
 				},
 				white: {
-					"100": "#F7F7F7",
-					DEFAULT: "#FFFFFF",
+					100: "#fafafa", // zinc-50
+					DEFAULT: "#ffffff",
 				},
 			},
 			fontFamily: {
-				"work-sans": ["var(--font-work-sans)"],
+				"inter": ["var(--font-inter)", "sans-serif"],
 			},
 			borderRadius: {
 				lg: "var(--radius)",
 				md: "calc(var(--radius) - 2px)",
 				sm: "calc(var(--radius) - 4px)",
-			},
-			boxShadow: {
-				100: "2px 2px 0px 0px rgb(0, 0, 0)",
-				200: "2px 2px 0px 2px rgb(0, 0, 0)",
-				300: "2px 2px 0px 2px rgb(238, 43, 105)",
 			},
 		},
 	},
